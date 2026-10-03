@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 
-query = 'site:linkedin.com/posts "manpower" "recruitment"'
+query = 'site:linkedin.com/posts manpower recruitment'
 
-url = "https://www.google.com/search?q=" + quote(query)
+url = "https://www.bing.com/search?q=" + quote(query)
 
 headers = {
     "User-Agent": (
@@ -21,25 +21,27 @@ print("PAGE SIZE:", len(response.text))
 
 soup = BeautifulSoup(response.text, "html.parser")
 
-print("\n--- ALL LINKEDIN URLS FOUND ---\n")
+print("\n--- BING RESULTS ---\n")
 
-found = 0
+count = 0
 
-for link in soup.find_all("a"):
-    href = link.get("href", "")
-    text = link.get_text(" ", strip=True)
+for result in soup.select("li.b_algo"):
 
-    if "linkedin.com" in href.lower():
-        found += 1
+    title = result.select_one("h2")
+    link = result.select_one("h2 a")
 
-        print("LINK:", href[:1000])
+    if title and link:
+        title_text = title.get_text(" ", strip=True)
+        href = link.get("href", "")
+
+        print("TITLE:", title_text)
+        print("URL:", href)
+
+        text = result.get_text(" ", strip=True)
         print("TEXT:", text[:1000])
+
         print("-" * 80)
 
-print("\nTOTAL LINKEDIN LINKS FOUND:", found)
+        count += 1
 
-print("\n--- PAGE TITLE ---\n")
-print(soup.title.get_text(strip=True) if soup.title else "No title")
-
-print("\n--- FIRST 3000 CHARACTERS OF PAGE TEXT ---\n")
-print(soup.get_text(" ", strip=True)[:3000])
+print("\nTOTAL RESULTS:", count)

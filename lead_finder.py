@@ -1,17 +1,20 @@
 import requests
+from bs4 import BeautifulSoup
 
-url = "https://www.linkedin.com/search/results/content/?keywords=manpower"
+url = "https://www.linkedin.com/search/results/content/?keywords=manpower%20India"
 
 headers = {
-    "User-Agent": "Mozilla/5.0"
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/133.0 Safari/537.36"
 }
 
-response = requests.get(url, headers=headers, timeout=20)
+response = requests.get(url, headers=headers, timeout=30)
 
 print("Status:", response.status_code)
-print("LinkedIn page received:", len(response.text), "characters")
+print("Page size:", len(response.text))
 
-if response.status_code == 200:
-    print("LinkedIn public page is reachable.")
-else:
-    print("LinkedIn returned status:", response.status_code)
+soup = BeautifulSoup(response.text, "html.parser")
+
+text = soup.get_text(" ", strip=True)
+
+print("\n--- LINKEDIN TEXT SAMPLE ---\n")
+print(text[:5000])

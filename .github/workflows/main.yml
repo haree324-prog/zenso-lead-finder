@@ -14,9 +14,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+  uses: actions/setup-python@v5
+  with:
+    python-version: "3.12"
 
-      - name: Run lead finder
-        run: python lead_finder.py
+- name: Install Python package
+  run: pip install requests
+
+- name: Run lead finder
+  run: python lead_finder.py

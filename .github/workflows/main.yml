@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Python package
-        run: pip install requests
+      - name: Install Python packages
+        run: pip install requests beautifulsoup4
 
       - name: Run lead finder
         run: python lead_finder.py

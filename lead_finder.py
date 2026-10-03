@@ -2,41 +2,44 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 
-query = 'site:linkedin.com/posts "manpower agency" "India"'
+query = 'site:linkedin.com/posts "manpower" "recruitment"'
 
 url = "https://www.google.com/search?q=" + quote(query)
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/133.0 Safari/537.36"
+    "User-Agent": (
+        "Mozilla/5.0 (X11; Linux x86_64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/133.0 Safari/537.36"
+    )
 }
 
 response = requests.get(url, headers=headers, timeout=30)
 
-print("Status:", response.status_code)
-print("Page size:", len(response.text))
+print("STATUS:", response.status_code)
+print("PAGE SIZE:", len(response.text))
 
 soup = BeautifulSoup(response.text, "html.parser")
 
-print("\n--- SEARCH RESULTS ---\n")
+print("\n--- ALL LINKEDIN URLS FOUND ---\n")
 
-results = soup.select("div.MjjYud")
+found = 0
 
-for result in results[:10]:
-    text = result.get_text(" ", strip=True)
+for link in soup.find_all("a"):
+    href = link.get("href", "")
+    text = link.get_text(" ", strip=True)
 
-    links = result.select("a")
+    if "linkedin.com" in href.lower():
+        found += 1
 
-    linkedin_url = ""
-
-    for link in links:
-        href = link.get("href", "")
-        if "linkedin.com/posts/" in href:
-            linkedin_url = href
-            break
-
-    if linkedin_url:
-        print("LINKEDIN POST:")
-        print(linkedin_url)
-        print("TEXT:")
-        print(text[:1500])
+        print("LINK:", href[:1000])
+        print("TEXT:", text[:1000])
         print("-" * 80)
+
+print("\nTOTAL LINKEDIN LINKS FOUND:", found)
+
+print("\n--- PAGE TITLE ---\n")
+print(soup.title.get_text(strip=True) if soup.title else "No title")
+
+print("\n--- FIRST 3000 CHARACTERS OF PAGE TEXT ---\n")
+print(soup.get_text(" ", strip=True)[:3000])
